@@ -16,13 +16,7 @@ Go to preferences, then Development. You'll see a possibly empty list of applica
 
 * Redirect URI: leave it as is.
 
-* Scopes: 
-
-1. Uncheck read. Check read:accounts.
-
-2. Uncheck write. Check write:statuses.
-
-3. Uncheck follow.
+* Scopes: Uncheck read. Check read:accounts. Uncheck write. Check write:statuses. Uncheck follow.
 
 * Click Submit.
 
@@ -34,11 +28,11 @@ You are taken back to the list, which now has a new item -- feedToMasto. Click o
 
 Copy the info on this page into the config.json file. 
 
-appName, scopes -- already filled out.
+* appName, scopes -- already filled out.
 
-clientKey, clientSecret, accessToken -- copy from form, replacing placeholder values.
+* clientKey, clientSecret, accessToken -- copy from form, replacing placeholder values.
 
-urlMastodonServer -- the url of the server you're using as you created this application.
+* urlMastodonServer -- the url of the server you're using as you created this application.
 
 *** Other values in config.json, the defaults and what they mean
 
