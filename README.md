@@ -2,11 +2,11 @@
 
 A Node app that checks a list of feeds periodically, posting new items to Mastodon.
 
-### Setup
+### config.json
 
-There's an example config.json file, in this section we explain how to set it up. 
+There's an example <a href="https://github.com/scripting/feedToMasto/blob/main/config.json">config.json</a> file, in the following sections we explain how to set it up. 
 
-Create a new app on your Mastodon server.
+### Create a new app on your Mastodon server.
 
 Go to preferences, then Development. You'll see a possibly empty list of applications. Click the <i>New application</i> button. A form appears. Fill it out as follows:
 
@@ -26,6 +26,8 @@ Go to preferences, then Development. You'll see a possibly empty list of applica
 
 Click Submit.
 
+### Copy info from the application page into config.jsone
+
 It should say <i>Application successfully created.</i>
 
 You are taken back to the list, which now has a new item -- feedToMasto. Click on it. 
@@ -38,7 +40,7 @@ clientKey, clientSecret, accessToken -- copy from form, replacing placeholder va
 
 urlMastodonServer -- the url of the server you're using as you created this application.
 
-Other values in config.json, the defaults and what they mean
+*** Other values in config.json, the defaults and what they mean
 
 "feeds": [url1, url2, url3, etc], //the urls of the feeds you want to check. I included a couple you can test with
 
