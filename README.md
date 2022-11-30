@@ -34,7 +34,9 @@ Copy the info on this page into the config.json file.
 
 * urlMastodonServer -- the url of the server you're using as you created this application.
 
-*** Other values in config.json, the defaults and what they mean
+### Other values in config.json, the defaults and what they mean
+
+```
 
 "feeds": [url1, url2, url3, etc], //the urls of the feeds you want to check. I included a couple you can test with
 
@@ -49,4 +51,6 @@ Copy the info on this page into the config.json file.
 "flServerSupportsMarkdown": true, //we're optimistic
 
 "disclaimer": "*This is a test. Still diggin!*" //this will appear at the beginning of every toot
+
+```
 
