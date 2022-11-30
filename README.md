@@ -18,13 +18,13 @@ Go to preferences, then Development. You'll see a possibly empty list of applica
 
 * Scopes: 
 
-- Uncheck read. Check read:accounts.
+1. Uncheck read. Check read:accounts.
 
-- Uncheck write. Check write:statuses.
+2. Uncheck write. Check write:statuses.
 
-- Uncheck follow.
+3. Uncheck follow.
 
-Click Submit.
+* Click Submit.
 
 ### Copy info from the application page into config.jsone
 
