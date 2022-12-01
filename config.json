@@ -2,6 +2,7 @@
 	"enabled": true,
 	"feeds": [
 		"http://scripting.com/rss.xml",
+		"http://radio3.io/users/davewiner/rss.xml",
 		"http://data.feedland.org/feeds/davewiner.xml"
 		],
 	"masto": {
