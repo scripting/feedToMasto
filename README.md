@@ -16,15 +16,15 @@ These are things I believe, or goals I have.
 
 ### Requirements
 
-You will need an account on a Mastodon server. 
+* You will need an account on a Mastodon server. 
 
-You will need a place to run a Node.js app. It can run behind a firewall, it does not have to run on a public-facing machine. 
+* You will need a place to run a Node.js app. It can run behind a firewall, it does not have to run on a public-facing machine. 
 
-You will need one or more feeds, they could be RSS, Atom or RDF. 
+* You will need one or more feeds, they could be RSS, Atom or RDF. 
 
-The feeds must have guids. This app depends on the guids being unique. 
+* The feeds must have guids. This app depends on the guids being unique. 
 
-To get started <a href="https://github.com/scripting/feedToMasto/archive/refs/heads/main.zip">download</a> the feedToMasto folder. 
+* To get started <a href="https://github.com/scripting/feedToMasto/archive/refs/heads/main.zip">download</a> the feedToMasto folder. 
 
 ### config.json
 
