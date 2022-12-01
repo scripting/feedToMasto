@@ -64,9 +64,11 @@ Finally click the Submit button at the bottom of the page.
 
 You should then see a list of your applications, with this new app on the list.
 
-### Back in config.json
+### Screen shot
 
 <img src="http://scripting.com/images/2022/12/01/arrowsOnMasto.png">
+
+### Back in config.json
 
 Open config.json in an editor. <a href="http://scripting.com/images/2022/12/01/configJsonScreen.png">This</a> is what you should see. 
 
