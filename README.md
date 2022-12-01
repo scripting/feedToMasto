@@ -2,55 +2,91 @@
 
 A Node app that checks a list of feeds periodically, posting new items to Mastodon.
 
+### Why did you do this?
+
+These are things I believe, or goals I have.
+
+* RSS should be part of the Fediverse. This is a first step.
+
+* To provide good simple working code for the Mastodon API. I had to do too much work to figure out how to get what amounts to a Hello World script up and running. Now you don't have to do all that work. 
+
+* If you want a process to periodically say something on your behalf via Mastodon, you have all the code you need, and instructions on how to set it up.
+
+* You should be able to build feed-based utilities without giving any thought to reading feeds. Reading a feed should be as easy as reading a JSON file. This app illustrates how that works, using the reallySimple package. 
+
+* I want to get some code out there into the Mastoverse, to start building a rep in the community. 
+
+### Getting started
+
+You will need an account on a Mastodon server. 
+
+You will need one or more feeds, they could be RSS, Atom or RDF. 
+
+The feeds must have guids. This app depends on the guids being unique. 
+
 ### config.json
 
-There's an example <a href="https://github.com/scripting/feedToMasto/blob/main/config.json">config.json</a> file, in the following sections we explain how to set it up. 
+Setting up the feedToMasto app is all done in config.json. Open it in a text editor.
 
-### Create a new app on your Mastodon server.
+### On your Mastodon account
 
-Go to preferences, then Development. You'll see a possibly empty list of applications. Click the <i>New application</i> button. A form appears. Fill it out as follows:
+Click on <i>Preferences,</i> in the right margin.
 
-* Application name: feedToMasto
+Click on <i>Development</i> in the left margin.
 
-* Application website: (anything you like)
+Click on the <i>New application</i> button in the upper right corner. 
 
-* Redirect URI: leave it as is.
+You should see a form that <a href="http://scripting.com/images/2022/12/01/newApplicationScreen.png">looks like this</a>. We're going to fill in the form. 
 
-* Scopes: Uncheck read. Check read:accounts. Uncheck write. Check write:statuses. Uncheck follow.
+* Application name -- anything you like, perhaps feedToMasto.
 
-* Click Submit.
+* Application website -- anything you like.
 
-### Copy info from the application page into config.jsone
+* Redirect URI -- leave it as-is.
 
-It should say <i>Application successfully created.</i>
+In the <i>Scopes</i> section do the following.
 
-You are taken back to the list, which now has a new item -- feedToMasto. Click on it. 
+* Uncheck read.
 
-Copy the info on this page into the config.json file. 
+* Check read:accounts.
 
-* appName, scopes -- already filled out.
+* Uncheck write.
 
-* clientKey, clientSecret, accessToken -- copy from form, replacing placeholder values.
+* Check write:statuses.
 
-* urlMastodonServer -- the url of the server you're using as you created this application.
+* Uncheck follow.
 
-### Other values in config.json, the defaults and what they mean
+When you're done the Scopes section should <a href="http://scripting.com/images/2022/12/01/checkboxesScreen.png">look like this</a>. 
 
-```
+Finally click the Submit button at the bottom of the page. 
 
-"feeds": [url1, url2, url3, etc], //the urls of the feeds you want to check. I included a couple you can test with
+You should then see a list of your applications, with this new app on the list.
 
-"ctSecsBetwChecks": 60, //it checks at most once a minute for updates to the feeds
+### Back in config.json
 
-"maxCtChars": 500, //the max length of a toot. if your server can handle more than 500 chars, you can increase this
+Open config.json in an editor. <a href="http://scripting.com/images/2022/12/01/configJsonScreen.png">This</a> is what you should see. 
 
-"flOnlyPostNewItems": true, //the first time the app runs we won't post all the items in the feeds, or when you add a new feed
+On the screen in your browser you should see various numeric strings that you are going to copy into config.json.
 
-"maxGuids": 2500, //we don't need to remember the guids forever -- 2500 seems like a good number
+Copy the three items, <i>Client key,</i> <i>Client secret</i> and <i>Your access token</i> from the browser to the xxx's in config.json as shown in this <a href="http://scripting.com/images/2022/12/01/copyFromWebToConfig.png">screen shot</a>. 
 
-"flServerSupportsMarkdown": true, //we're optimistic
+Enter the URL of your Mastodon server in <i>urlMastodonServer</i> in config.json.
 
-"disclaimer": "*This is a test. Still diggin!*" //this will appear at the beginning of every toot
+### What the other items in config.json are for
 
-```
+enabled -- if you set it false and reboot the app it will do everything but check the feeds. 
+
+feeds -- an array of feed URLs. I've included two feeds to get you started. You should change them to your feed addresses of course. 
+
+ctSecsBetwChecks -- the amount of time between feed checks. We only check every minute at the top of the minute. Default value is 60.
+
+maxCtChars -- the number of characters in a toot. Maybe you have a higher number on your server?
+
+flOnlyPostNewItems -- If false, the first time we read a feed we'll dump all the items into the Mastodon account. Probably not what you had in mind, that's why it defaults to true. 
+
+maxGuids -- we use the guids in feed items to determine if we've already pushed the item to Mastodon. At some point we no longer need to keep it around because it's no longer in the feed, but we never know for sure what that is. It depends on how many feeds you have and how big they tend to get. The default of 2500 seemed a good balance between performance and the risk of posting items twice.
+
+flServerSupportsMarkdown -- if it does, we'll look for source:markdown elements in the feed item and transmit that in place of the description element.
+
+disclaimer -- text that appears at the begining of every toot. If you don't want it, make it the empty string.
 
