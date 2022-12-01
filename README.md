@@ -64,10 +64,6 @@ Finally click the Submit button at the bottom of the page.
 
 You should then see a list of your applications, with this new app on the list.
 
-### Screen shot
-
-<img src="http://scripting.com/images/2022/12/01/arrowsOnMasto.png">
-
 ### Back in config.json
 
 Open config.json in an editor. <a href="http://scripting.com/images/2022/12/01/configJsonScreen.png">This</a> is what you should see. 
@@ -77,6 +73,10 @@ On the screen in your browser you should see various numeric strings that you ar
 Copy the three items, <i>Client key,</i> <i>Client secret</i> and <i>Your access token</i> from the browser to the xxx's in config.json as shown in this <a href="http://scripting.com/images/2022/12/01/copyFromWebToConfig.png">screen shot</a>. 
 
 Enter the URL of your Mastodon server in <i>urlMastodonServer</i> in config.json.
+
+### Screen shot
+
+<img src="http://scripting.com/images/2022/12/01/arrowsOnMasto.png">
 
 ### What the other items in config.json are for
 
