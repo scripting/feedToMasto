@@ -6,11 +6,11 @@ A Node app that checks a list of feeds periodically, posting new items to Mastod
 
 These are things I believe, or goals I have.
 
-* The network of RSS publishers and readers should be part of the Fediverse. feedToMasto enables the flow of RSS content into the Fediverse.
+* The network of RSS publishers and readers should be part of the Fediverse. feedToMasto enables the flow of RSS content into the Fediverse via Mastodon.
 
 * To provide good simple working code for the Mastodon API. I had to do too much work to figure out how to get what amounts to a Hello World script up and running. Now you don't have to do all that work. 
 
-* You should be able to build feed-based utilities without giving any thought to reading feeds. Reading a feed should be as easy as reading a JSON file. This app illustrates how that works, using the reallySimple package. 
+* You should be able to build feed-based utilities without giving any thought to reading feeds. Reading a feed should be as easy as reading a JSON file. This app illustrates how that works, using the <a href="https://github.com/scripting/reallysimple">reallySimple package</a>. 
 
 * I want to get some code out there into the Mastoverse, to start building a rep in the community. 
 
@@ -66,6 +66,8 @@ You should then see a list of your applications, with this new app on the list.
 
 ### Back in config.json
 
+<img src="http://scripting.com/images/2022/12/01/arrowsOnMasto.png">
+
 Open config.json in an editor. <a href="http://scripting.com/images/2022/12/01/configJsonScreen.png">This</a> is what you should see. 
 
 On the screen in your browser you should see various numeric strings that you are going to copy into config.json.
@@ -98,5 +100,5 @@ The other values in config.json have default values that work well for a first r
 
 <a href="http://scripting.com/2020/05/26/194558.html?title=bugReportsNotPullRequests">Bug reports, not pull requests</a>. 
 
-Comments, questions, feature requests, bug reports here. 
+Comments, questions, feature requests, bug reports <a href="https://github.com/scripting/feedToMasto/issues">here</a>. 
 
