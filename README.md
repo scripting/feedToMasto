@@ -74,19 +74,21 @@ Enter the URL of your Mastodon server in <i>urlMastodonServer</i> in config.json
 
 ### What the other items in config.json are for
 
-enabled -- if you set it false and reboot the app it will do everything but check the feeds. 
+The other values in config.json have default values that work well for a first run of the app. The only ones you should come back before running it for real are <i>feeds</i> and <i>disclaimer. </i>
 
-feeds -- an array of feed URLs. I've included two feeds to get you started. You should change them to your feed addresses of course. 
+* enabled -- if you set it false and reboot the app it will do everything but check the feeds. 
 
-ctSecsBetwChecks -- the amount of time between feed checks. We only check every minute at the top of the minute. Default value is 60.
+* feeds -- an array of feed URLs. I've included two feeds to get you started. You should change them to your feed addresses of course. 
 
-maxCtChars -- the number of characters in a toot. Maybe you have a higher number on your server?
+* ctSecsBetwChecks -- the amount of time between feed checks. We only check every minute at the top of the minute. Default value is 60.
 
-flOnlyPostNewItems -- If false, the first time we read a feed we'll dump all the items into the Mastodon account. Probably not what you had in mind, that's why it defaults to true. 
+* maxCtChars -- the number of characters in a toot. Maybe you have a higher number on your server?
 
-maxGuids -- we use the guids in feed items to determine if we've already pushed the item to Mastodon. At some point we no longer need to keep it around because it's no longer in the feed, but we never know for sure what that is. It depends on how many feeds you have and how big they tend to get. The default of 2500 seemed a good balance between performance and the risk of posting items twice.
+* flOnlyPostNewItems -- If false, the first time we read a feed we'll dump all the items into the Mastodon account. Probably not what you had in mind, that's why it defaults to true. 
 
-flServerSupportsMarkdown -- if it does, we'll look for source:markdown elements in the feed item and transmit that in place of the description element.
+* maxGuids -- we use the guids in feed items to determine if we've already pushed the item to Mastodon. At some point we no longer need to keep it around because it's no longer in the feed, but we never know for sure what that is. It depends on how many feeds you have and how big they tend to get. The default of 2500 seemed a good balance between performance and the risk of posting items twice.
+
+* flServerSupportsMarkdown -- if it does, we'll look for source:markdown elements in the feed item and transmit that in place of the description element.
 
 disclaimer -- text that appears at the begining of every toot. If you don't want it, make it the empty string.
 
