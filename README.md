@@ -16,9 +16,11 @@ These are things I believe, or goals I have.
 
 * I want to get some code out there into the Mastoverse, to start building a rep in the community. 
 
-### Getting started
+### Requirements
 
 You will need an account on a Mastodon server. 
+
+You will need a place to run a Node.js app. It can run behind a firewall, it does not have to run on a public-facing machine. 
 
 You will need one or more feeds, they could be RSS, Atom or RDF. 
 
