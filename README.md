@@ -6,11 +6,9 @@ A Node app that checks a list of feeds periodically, posting new items to Mastod
 
 These are things I believe, or goals I have.
 
-* RSS should be part of the Fediverse. This is a first step.
+* The network of RSS publishers and readers should be part of the Fediverse. feedToMasto enables the flow of RSS content into the Fediverse.
 
 * To provide good simple working code for the Mastodon API. I had to do too much work to figure out how to get what amounts to a Hello World script up and running. Now you don't have to do all that work. 
-
-* If you want a process to periodically say something on your behalf via Mastodon, you have all the code you need, and instructions on how to set it up.
 
 * You should be able to build feed-based utilities without giving any thought to reading feeds. Reading a feed should be as easy as reading a JSON file. This app illustrates how that works, using the reallySimple package. 
 
@@ -26,9 +24,11 @@ You will need one or more feeds, they could be RSS, Atom or RDF.
 
 The feeds must have guids. This app depends on the guids being unique. 
 
+To get started <a href="https://github.com/scripting/feedToMasto/archive/refs/heads/main.zip">download</a> the feedToMasto folder. 
+
 ### config.json
 
-Setting up the feedToMasto app is all done in config.json. Open it in a text editor.
+Setting up the feedToMasto app is all done in <a href="https://github.com/scripting/feedToMasto/blob/main/config.json">config.json</a>. Open it in a text editor.
 
 ### On your Mastodon account
 
@@ -93,4 +93,10 @@ The other values in config.json have default values that work well for a first r
 * flServerSupportsMarkdown -- if it does, we'll look for source:markdown elements in the feed item and transmit that in place of the description element.
 
 * disclaimer -- text that appears at the begining of every toot. If you don't want it, make it the empty string.
+
+### Notes
+
+<a href="http://scripting.com/2020/05/26/194558.html?title=bugReportsNotPullRequests">Bug reports, not pull requests</a>. 
+
+Comments, questions, feature requests, bug reports here. 
 
