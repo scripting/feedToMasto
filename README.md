@@ -90,5 +90,5 @@ The other values in config.json have default values that work well for a first r
 
 * flServerSupportsMarkdown -- if it does, we'll look for source:markdown elements in the feed item and transmit that in place of the description element.
 
-disclaimer -- text that appears at the begining of every toot. If you don't want it, make it the empty string.
+* disclaimer -- text that appears at the begining of every toot. If you don't want it, make it the empty string.
 
