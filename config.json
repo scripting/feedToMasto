@@ -3,7 +3,9 @@
 	"feeds": [
 		"http://scripting.com/rss.xml",
 		"http://radio3.io/users/davewiner/rss.xml",
-		"http://data.feedland.org/feeds/davewiner.xml"
+		"http://data.feedland.org/likes.xml",
+		"http://data.feedland.org/feeds/davewiner.xml",
+		"http://nytimes.com/timeswire/feeds/"
 		],
 	"masto": {
 		"appName": "feedToMasto",
@@ -18,5 +20,5 @@
 	"flOnlyPostNewItems": true,
 	"maxGuids": 2500,
 	"flServerSupportsMarkdown": true,
-	"disclaimer": "*This is a test. Still diggin!*"
+	"disclaimer": ""
 	}

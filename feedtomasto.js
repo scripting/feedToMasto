@@ -1,4 +1,4 @@
-const myVersion = "0.4.0", myProductName = "feedToMasto"; 
+const myVersion = "0.4.1", myProductName = "feedToMasto"; 
 
 const fs = require ("fs");
 const utils = require ("daveutils");
@@ -195,28 +195,26 @@ function postNewItem (item, feedUrl) {
 	
 	var link = "";
 	if (item.link !== undefined) {
-		link = item.link;
+		link = "\n" + item.link;
 		}
 	if (item.title !== undefined) {
-		add ("# " + item.title + "\n");
+		add ("### " + item.title + "\n");
+		}
+	function addDescription (desc) {
+		const maxcount = config.maxCtChars - (statustext.length + link.length + 1); //the 1 is for the newline after the description
+		add (utils.maxStringLength (desc, maxcount, false, true));
+		add ("");
+		}
+	if (config.flServerSupportsMarkdown) {
+		if ((item.description !== undefined) || (item.markdown !== undefined)) {
+			var desc = (item.markdown === undefined) ? item.description : item.markdown;
+			addDescription (desc);
+			}
 		}
 	else {
-		function addDescription (desc) {
-			add (utils.maxStringLength (desc, config.maxCtChars - statustext.length - link.length - 5, false, true));
-			add ("");
-			}
-		if (config.flServerSupportsMarkdown) {
-			if ((item.description !== undefined) || (item.markdown !== undefined)) {
-				var desc = (item.markdown === undefined) ? item.description : item.markdown;
-				addDescription (desc);
-				}
-			}
-		else {
-			addDescription (item.description);
-			}
+		addDescription (item.description);
 		}
 	if (link.length > 0) {
-		add ("");
 		add (link);
 		}
 	
