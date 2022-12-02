@@ -1,4 +1,4 @@
-const myVersion = "0.4.1", myProductName = "feedToMasto"; 
+const myVersion = "0.4.2", myProductName = "feedToMasto"; 
 
 const fs = require ("fs");
 const utils = require ("daveutils");
@@ -190,6 +190,11 @@ function postNewItem (item, feedUrl) {
 	function add (s) {
 		statustext += s + "\n";
 		}
+	function addDescription (desc) {
+		const maxcount = config.maxCtChars - (statustext.length + link.length + 1); //the 1 is for the newline after the description
+		add (utils.maxStringLength (desc, maxcount, false, true));
+		add ("");
+		}
 	
 	add (config.disclaimer + "\n");
 	
@@ -200,14 +205,9 @@ function postNewItem (item, feedUrl) {
 	if (item.title !== undefined) {
 		add ("### " + item.title + "\n");
 		}
-	function addDescription (desc) {
-		const maxcount = config.maxCtChars - (statustext.length + link.length + 1); //the 1 is for the newline after the description
-		add (utils.maxStringLength (desc, maxcount, false, true));
-		add ("");
-		}
 	if (config.flServerSupportsMarkdown) {
 		if ((item.description !== undefined) || (item.markdown !== undefined)) {
-			var desc = (item.markdown === undefined) ? item.description : item.markdown;
+			var desc = (item.markdown === undefined) ? utils.stripMarkup (item.description) : item.markdown;
 			addDescription (desc);
 			}
 		}
@@ -264,17 +264,20 @@ function writeStats () {
 	fs.writeFile (fnameStats, utils.jsonStringify (stats), function (err) {
 		});
 	}
+function checkFeeds () {
+	whenLastCheck = new Date ();
+	config.feeds.forEach (function (feedUrl) {
+		checkFeed (feedUrl, function (err, data) {
+			if (err) {
+				console.log ("everySecond: feedUrl == " +feedUrl + ", err.message == " + err.message);
+				}
+			});
+		});
+	}
 function everyMinute () {
 	if (config.enabled) { //check feeds at most once a minute
 		if (utils.secondsSince (whenLastCheck) > config.ctSecsBetwChecks) {
-			whenLastCheck = new Date ();
-			config.feeds.forEach (function (feedUrl) {
-				checkFeed (feedUrl, function (err, data) {
-					if (err) {
-						console.log ("everySecond: feedUrl == " +feedUrl + ", err.message == " + err.message);
-						}
-					});
-				});
+			checkFeeds ();
 			}
 		}
 	deleteOldGuids ();
@@ -309,6 +312,7 @@ readConfig (fnameStats, stats, function () {
 		
 		
 		console.log ("config == " + utils.jsonStringify (config));
+		checkFeeds (); //check at startup
 		utils.runEveryMinute (everyMinute);
 		setInterval (everySecond, 1000);
 		});
