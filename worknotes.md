@@ -1,3 +1,7 @@
+#### 12/3/22 by DW -- v0.4.3
+
+Follow redirects on HTTP requests. 
+
 #### 12/2/22 by DW -- v0.4.2
 
 Strip HTML markup from the description element, if it's used. Mastodon neuters the HTML tags. Not a good look.

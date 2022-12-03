@@ -1,4 +1,4 @@
-const myVersion = "0.4.2", myProductName = "feedToMasto"; 
+const myVersion = "0.4.3", myProductName = "feedToMasto"; 
 
 const fs = require ("fs");
 const utils = require ("daveutils");
@@ -103,6 +103,8 @@ function mastocall (path, params, callback) {
 	const theRequest = {
 		url: config.masto.urlMastodonServer + path + "?" + buildParamList (params),
 		method: "GET",
+		followAllRedirects: true, //12/3/22 by DW
+		maxRedirects: 5,
 		headers,
 		};
 	request (theRequest, function (err, response, jsontext) {
@@ -148,6 +150,8 @@ function mastopost (path, params, filedata, callback) {
 	const theRequest = {
 		url: config.masto.urlMastodonServer + path + "?" + buildParamList (params),
 		method: "POST",
+		followAllRedirects: true, //12/3/22 by DW
+		maxRedirects: 5,
 		headers: {
 			Authorization: "Bearer " + config.masto.accessToken
 			},
