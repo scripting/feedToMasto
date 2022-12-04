@@ -1,3 +1,9 @@
+#### 12/4/22 by DW
+
+Rewrote mastopost to send the params in the body of the post instead of as url params. 
+
+This the way forms work, and posts are basically emulating forms, so it seemed this was the most conservative way to go and should give the maximum interop.
+
 #### 12/3/22 by DW -- v0.4.3
 
 Follow redirects on HTTP requests. 

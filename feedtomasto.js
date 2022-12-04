@@ -1,4 +1,4 @@
-const myVersion = "0.4.3", myProductName = "feedToMasto"; 
+const myVersion = "0.4.4", myProductName = "feedToMasto"; 
 
 const fs = require ("fs");
 const utils = require ("daveutils");
@@ -82,16 +82,21 @@ function isNewFeed (feedUrl) {
 	return (flnew);
 	}
 function buildParamList (paramtable) { //8/4/21 by DW
-	var s = "";
-	for (var x in paramtable) {
-		if (paramtable [x] !== undefined) { //8/4/21 by DW
-			if (s.length > 0) {
-				s += "&";
-				}
-			s += x + "=" + encodeURIComponent (paramtable [x]);
-			}
+	if (paramtable === undefined) {
+		return ("");
 		}
-	return (s);
+	else {
+		var s = "";
+		for (var x in paramtable) {
+			if (paramtable [x] !== undefined) { //8/4/21 by DW
+				if (s.length > 0) {
+					s += "&";
+					}
+				s += x + "=" + encodeURIComponent (paramtable [x]);
+				}
+			}
+		return (s);
+		}
 	}
 function mastocall (path, params, callback) {
 	var headers = undefined;
@@ -146,16 +151,17 @@ function mastocall (path, params, callback) {
 			}
 		});
 	}
-function mastopost (path, params, filedata, callback) {
+function mastopost (path, params, callback) {
 	const theRequest = {
-		url: config.masto.urlMastodonServer + path + "?" + buildParamList (params),
+		url: config.masto.urlMastodonServer + path,
 		method: "POST",
 		followAllRedirects: true, //12/3/22 by DW
 		maxRedirects: 5,
 		headers: {
-			Authorization: "Bearer " + config.masto.accessToken
+			"Authorization": "Bearer " + config.masto.accessToken,
+			"Content-Type": "application/x-www-form-urlencoded"
 			},
-		body: filedata
+		body: buildParamList (params)
 		};
 	request (theRequest, function (err, response, jsontext) {
 		if (err) {
@@ -187,7 +193,7 @@ function tootStatus (statusText, inReplyTo, callback) {
 		status: statusText,
 		in_reply_to_id: inReplyTo
 		};
-	mastopost ("api/v1/statuses", params, undefined, callback);
+	mastopost ("api/v1/statuses", params, callback);
 	}
 function postNewItem (item, feedUrl) {
 	var statustext = "";
