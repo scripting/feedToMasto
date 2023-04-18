@@ -1,14 +1,14 @@
-const myVersion = "0.4.4", myProductName = "feedToMasto"; 
+const myVersion = "0.5.0", myProductName = "feedToMasto"; 
 
 const fs = require ("fs");
-const utils = require ("daveutils");
 const request = require ("request");
+const websocket = require ("websocket").w3cwebsocket;
+const utils = require ("daveutils");
 const reallysimple = require ("reallysimple");
 
 var config = {
 	enabled: true,
 	feeds: [
-		"http://scripting.com/rss.xml",
 		"http://data.feedland.org/feeds/davewiner.xml"
 		],
 	masto: {
@@ -25,8 +25,10 @@ var config = {
 	flOnlyPostNewItems: true, //if false when we start up we'll post all the items in the feed
 	maxGuids: 2500, //we don't store the guids forever, after we have this number of guids, we start deleting the oldest ones
 	flServerSupportsMarkdown: true, //we're optimistic! ;-)
-	disclaimer: "*This is a test. This came out of the archive of my blog. None of this happened today or yesterday. Still diggin!*"
+	disclaimer: "*This is a test. This came out of the archive of my blog. None of this happened today or yesterday. Still diggin!*",
+	urlSocketServer: "wss://feedland.org/" //4/18/23 by DW 
 	};
+const fnameConfig = "config.json";
 
 var stats = {
 	guids: new Object ()
@@ -240,7 +242,6 @@ function postNewItem (item, feedUrl) {
 function checkFeed (feedUrl, callback) {
 	const flNewFeed = isNewFeed (feedUrl);
 	var flPost = (flNewFeed && config.flOnlyPostNewItems) ? false : true;
-	
 	reallysimple.readFeed (feedUrl, function (err, theFeed) {
 		if (err) {
 			callback (err);
@@ -284,6 +285,59 @@ function checkFeeds () {
 			});
 		});
 	}
+
+function startSocket () { //4/18/23 by DW
+	function wsConnectUserToServer (itemReceivedCallback) {
+		var mySocket = undefined;
+		function checkConnection () {
+			if (mySocket === undefined) {
+				mySocket = new websocket (config.urlSocketServer); 
+				mySocket.onopen = function (evt) {
+					};
+				mySocket.onmessage = function (evt) {
+					function getPayload (jsontext) {
+						var thePayload = undefined;
+						try {
+							thePayload = JSON.parse (jsontext);
+							}
+						catch (err) {
+							}
+						return (thePayload);
+						}
+					if (evt.data !== undefined) { //no error
+						var theCommand = utils.stringNthField (evt.data, "\r", 1);
+						var jsontext = utils.stringDelete (evt.data, 1, theCommand.length + 1);
+						var thePayload = getPayload (jsontext);
+						switch (theCommand) {
+							case "newItem": 
+								itemReceivedCallback (thePayload);
+								break;
+							}
+						}
+					};
+				mySocket.onclose = function (evt) {
+					mySocket = undefined;
+					};
+				mySocket.onerror = function (evt) {
+					};
+				}
+			}
+		setInterval (checkConnection, 1000);
+		}
+	wsConnectUserToServer (function (thePayload) {
+		config.feeds.forEach (function (feedUrl) {
+			if (feedUrl == thePayload.theFeed.feedUrl) {
+				console.log (new Date ().toLocaleTimeString () + ": title == " + thePayload.theFeed.title + ", feedUrl == " + thePayload.theFeed.feedUrl);
+				checkFeed (feedUrl, function (err, data) {
+					if (err) {
+						console.log ("startSocket: feedUrl == " +feedUrl + ", err.message == " + err.message);
+						}
+					});
+				}
+			});
+		});
+	}
+
 function everyMinute () {
 	if (config.enabled) { //check feeds at most once a minute
 		if (utils.secondsSince (whenLastCheck) > config.ctSecsBetwChecks) {
@@ -317,13 +371,11 @@ function readConfig (fname, data, callback) {
 		});
 	}
 readConfig (fnameStats, stats, function () {
-	readConfig ("config.json", config, function () {
-		
-		
-		
+	readConfig (fnameConfig, config, function () {
 		console.log ("config == " + utils.jsonStringify (config));
 		checkFeeds (); //check at startup
 		utils.runEveryMinute (everyMinute);
 		setInterval (everySecond, 1000);
+		startSocket (); //4/18/23 by DW
 		});
 	});

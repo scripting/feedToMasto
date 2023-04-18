@@ -1,8 +1,16 @@
+#### 4/18/23 by DW
+
+Hook it up to FeedLand's websockets interface so we're notified instantly that feeds updated. Much simpler than the rssCloud interface. 
+
+#### 4/17/23 by DW
+
+I'm going to use this to map my linkblog feed to Mastodon. 
+
 #### 12/4/22 by DW
 
 Rewrote mastopost to send the params in the body of the post instead of as url params. 
 
-This the way forms work, and posts are basically emulating forms, so it seemed this was the most conservative way to go and should give the maximum interop.
+This is the way forms work, and posts are basically emulating forms, so it seemed this was the most conservative way to go and should give the maximum interop.
 
 #### 12/3/22 by DW -- v0.4.3
 
@@ -24,7 +32,7 @@ Added three more feeds to the initial config.json: my linkblog feed, NYT Most Re
 
 Also emptied out the disclaimer in the initial config.json.
 
-#### 11/28/22 by DW
+#### 11/28/22 by DW 
 
 Check a list of feeds periodically, post new items to Mastodon.
 
