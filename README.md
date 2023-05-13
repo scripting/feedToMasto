@@ -6,7 +6,7 @@ A Node app that checks a list of feeds periodically, posting new items to Mastod
 
 Where ever you see "Mastodon" in the docs here, replace it in your mind with "Mastodon and/or Bluesky."
 
-I've started a separate page for how to configure this app to post to Bluesky as well.
+I've started a separate <a href="https://github.com/scripting/feedToMasto#using-with-bluesky">section</a> below for how to configure this app to post to Bluesky as well.
 
 ### Why did you do this?
 
@@ -90,9 +90,9 @@ Enter the URL of your Mastodon server in <i>urlMastodonServer</i> in config.json
 
 In config.json, at the top level, create a new object called bluesky.
 
-Set it up as shown in the example file. Basically you're providing the same info you provide when you log in personally, your username, email address and password. 
+Set it up as shown in the <a href="https://github.com/scripting/feedToMasto/blob/main/config.json">example file</a>. Basically you're providing the same info you provide when you log in personally, your username, email address and password. 
 
-Why Bluesky? I wanted to start fanning out to support social networks other than Mastodon. I was using Bluesky and had some good <a href="https://www.manton.org/2023/04/29/getting-started-with.html">developer docs</a> from my friend Manton Reece, so I decided the second platform would be Bluesky. This is not an endorsement of Bluesky. 
+Why Bluesky? I wanted to start fanning out to support new social networks other than Mastodon. I was using Bluesky and had some good <a href="https://www.manton.org/2023/04/29/getting-started-with.html">developer docs</a> from my friend Manton Reece, so I decided the second platform would be Bluesky. This is not an endorsement of the product. 
 
 ### What the other items in config.json are for
 
