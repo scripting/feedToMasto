@@ -1,24 +1,32 @@
 {
 	"enabled": true,
 	"feeds": [
-		"http://scripting.com/rss.xml",
-		"http://radio3.io/users/davewiner/rss.xml",
-		"http://data.feedland.org/likes.xml",
 		"http://data.feedland.org/feeds/davewiner.xml",
 		"http://nytimes.com/timeswire/feeds/"
 		],
 	"masto": {
+		"enabled": true,
 		"appName": "feedToMasto",
 		"urlMastodonServer": "https://my.masto.social/",
 		"clientKey": "xxx",
 		"clientSecret": "xxx",
 		"accessToken": "xxx",
-		"scopes": "write:statuses+read:accounts"
+		"scopes": "write:statuses+read:accounts",
+		"flServerSupportsMarkdown": false
+		},
+	"bluesky": {
+		"enabled": true,
+		"username": "bullmancuso",
+		"mailaddress": "bull@mancuso.com",
+		"password": "xxx",
+		"urlsite": "https://bsky.social/",
+		"maxCtChars": 300,
+		"flServerSupportsMarkdown": false
 		},
 	"ctSecsBetwChecks": 60,
 	"maxCtChars": 500,
 	"flOnlyPostNewItems": true,
 	"maxGuids": 2500,
-	"flServerSupportsMarkdown": true,
+	"flServerSupportsMarkdown": false,
 	"disclaimer": ""
 	}

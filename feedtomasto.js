@@ -1,4 +1,4 @@
-const myVersion = "0.5.0", myProductName = "feedToMasto"; 
+const myVersion = "0.6.1", myProductName = "feedToMasto"; 
 
 const fs = require ("fs");
 const request = require ("request");
@@ -12,19 +12,29 @@ var config = {
 		"http://data.feedland.org/feeds/davewiner.xml"
 		],
 	masto: {
+		enabled: false, //5/12/23 by DW
 		appName: "feedToMasto",
 		urlMastodonServer: undefined,
 		access_token: undefined,
 		created_at: undefined,
 		scope: "write:statuses read:accounts",
-		token_type: "Bearer"
+		token_type: "Bearer",
+		maxCtChars: 500,
+		flServerSupportsMarkdown: false
+		},
+	bluesky: { //5/12/23 by DW
+		enabled: false, 
+		urlsite: undefined,
+		username: undefined,
+		password: undefined,
+		maxCtChars: 300,
+		flServerSupportsMarkdown: false
 		},
 	dataFolder: "data/",
 	ctSecsBetwChecks: 60,
 	maxCtChars: 500,
 	flOnlyPostNewItems: true, //if false when we start up we'll post all the items in the feed
 	maxGuids: 2500, //we don't store the guids forever, after we have this number of guids, we start deleting the oldest ones
-	flServerSupportsMarkdown: true, //we're optimistic! ;-)
 	disclaimer: "*This is a test. This came out of the archive of my blog. None of this happened today or yesterday. Still diggin!*",
 	urlSocketServer: "wss://feedland.org/" //4/18/23 by DW 
 	};
@@ -100,145 +110,320 @@ function buildParamList (paramtable) { //8/4/21 by DW
 		return (s);
 		}
 	}
-function mastocall (path, params, callback) {
-	var headers = undefined;
-	if (config.masto.accessToken !== undefined) {
-		headers = {
-			Authorization: "Bearer " + config.masto.accessToken
-			};
-		}
-	const theRequest = {
-		url: config.masto.urlMastodonServer + path + "?" + buildParamList (params),
-		method: "GET",
-		followAllRedirects: true, //12/3/22 by DW
-		maxRedirects: 5,
-		headers,
-		};
-	request (theRequest, function (err, response, jsontext) {
-		function sendBackError (defaultMessage) {
-			var flcalledback = false;
-			if (data !== undefined) {
-				try {
-					jstruct = JSON.parse (data);
-					if (jstruct.error !== undefined) {
-						callback ({message: jstruct.error});
-						flcalledback = true;
-						}
-					}
-				catch (err) {
-					}
+function saveItemForDebugging (item) {
+	const f = "data/items/" + utils.random (1000, 9999) + ".json";
+	utils.sureFilePath (f, function () {
+		fs.writeFile (f, utils.jsonStringify (item), function (err) {
+			if (err) {
+				console.log (err.message);
 				}
-				
-			if (!flcalledback) {
-				callback ({message: defaultMessage});
-				}
-			}
-		if (err) {
-			sendBackError (err.message);
-			}
-		else {
-			var code = response.statusCode;
-			if ((code < 200) || (code > 299)) {
-				const message = "The request returned a status code of " + response.statusCode + ".";
-				sendBackError (message);
-				}
-			else {
-				try {
-					callback (undefined, JSON.parse (jsontext))
-					}
-				catch (err) {
-					callback (err);
-					}
-				}
-			}
+			});
 		});
 	}
-function mastopost (path, params, callback) {
-	const theRequest = {
-		url: config.masto.urlMastodonServer + path,
-		method: "POST",
-		followAllRedirects: true, //12/3/22 by DW
-		maxRedirects: 5,
-		headers: {
-			"Authorization": "Bearer " + config.masto.accessToken,
-			"Content-Type": "application/x-www-form-urlencoded"
-			},
-		body: buildParamList (params)
-		};
-	request (theRequest, function (err, response, jsontext) {
+function getDebuggingItem (num, callback) {
+	const f = "data/items/" + num + ".json";
+	fs.readFile (f, function (err, jsontext) {
 		if (err) {
-			console.log ("mastopost: err.message == " + err.message);
 			callback (err);
 			}
 		else {
-			var code = response.statusCode;
-			if ((code < 200) || (code > 299)) {
-				const message = "The request returned a status code of " + response.statusCode + ".";
-				callback ({message});
+			callback (undefined, JSON.parse (jsontext));
+			}
+		});
+	}
+function getStatusText (item, maxCtChars=config.maxCtChars) { //5/12/23 by DW
+	var statustext = "";
+	function add (s) {
+		statustext += s;
+		}
+	function addText (desc) {
+		desc = utils.trimWhitespace (utils.stripMarkup (desc));
+		if (desc.length > 0) {
+			const maxcount = maxCtChars - (statustext.length + desc.length + 2); //the 2 is for the two newlines after the description
+			desc = utils.maxStringLength (desc, maxcount, false, true) + "\n\n";
+			add (desc);
+			}
+		}
+	function notEmpty (s) {
+		if (s === undefined) {
+			return (false);
+			}
+		if (s.length == 0) {
+			return (false);
+			}
+		return (true);
+		}
+	if (notEmpty (item.title)) {
+		addText (item.title);
+		}
+	else {
+		addText (item.description);
+		}
+	if (notEmpty (item.link)) {
+		add (item.link);
+		}
+	return (statustext);
+	}
+
+//mastodon
+	function mastocall (path, params, callback) {
+		var headers = undefined;
+		if (config.masto.accessToken !== undefined) {
+			headers = {
+				Authorization: "Bearer " + config.masto.accessToken
+				};
+			}
+		const theRequest = {
+			url: config.masto.urlMastodonServer + path + "?" + buildParamList (params),
+			method: "GET",
+			followAllRedirects: true, //12/3/22 by DW
+			maxRedirects: 5,
+			headers,
+			};
+		request (theRequest, function (err, response, jsontext) {
+			function sendBackError (defaultMessage) {
+				var flcalledback = false;
+				if (data !== undefined) {
+					try {
+						jstruct = JSON.parse (data);
+						if (jstruct.error !== undefined) {
+							callback ({message: jstruct.error});
+							flcalledback = true;
+							}
+						}
+					catch (err) {
+						}
+					}
+					
+				if (!flcalledback) {
+					callback ({message: defaultMessage});
+					}
+				}
+			if (err) {
+				sendBackError (err.message);
+				}
+			else {
+				var code = response.statusCode;
+				if ((code < 200) || (code > 299)) {
+					const message = "The request returned a status code of " + response.statusCode + ".";
+					sendBackError (message);
+					}
+				else {
+					try {
+						callback (undefined, JSON.parse (jsontext))
+						}
+					catch (err) {
+						callback (err);
+						}
+					}
+				}
+			});
+		}
+	function mastopost (path, params, callback) {
+		const theRequest = {
+			url: config.masto.urlMastodonServer + path,
+			method: "POST",
+			followAllRedirects: true, //12/3/22 by DW
+			maxRedirects: 5,
+			headers: {
+				"Authorization": "Bearer " + config.masto.accessToken,
+				"Content-Type": "application/x-www-form-urlencoded"
+				},
+			body: buildParamList (params)
+			};
+		request (theRequest, function (err, response, jsontext) {
+			if (err) {
+				console.log ("mastopost: err.message == " + err.message);
+				callback (err);
+				}
+			else {
+				var code = response.statusCode;
+				if ((code < 200) || (code > 299)) {
+					const message = "The request returned a status code of " + response.statusCode + ".";
+					callback ({message});
+					}
+				else {
+					try {
+						callback (undefined, JSON.parse (jsontext))
+						}
+					catch (err) {
+						callback (err);
+						}
+					}
+				}
+			});
+		}
+	function getUserInfo (callback) {
+		mastocall ("api/v1/accounts/verify_credentials", undefined, callback);
+		}
+	function tootStatus (statusText, inReplyTo, callback) {
+		const params = {
+			status: statusText,
+			in_reply_to_id: inReplyTo
+			};
+		mastopost ("api/v1/statuses", params, callback);
+		}
+	function mastoPostNewItem (item) {
+		if (utils.getBoolean (config.masto.enabled)) {
+			const statustext = getStatusText (item, config.masto.maxCtChars); //5/12/23 by DW
+			tootStatus (statustext, undefined, function (err, data) {
+				if (err) {
+					console.log (err.message);
+					}
+				else {
+					console.log (new Date ().toLocaleTimeString () + ": " + data.url);
+					}
+				});
+			}
+		}
+//bluesky
+	function blueskyGetAccessToken (options, callback) {
+		const url = options.urlsite + "xrpc/com.atproto.server.createSession";
+		const bodystruct = {
+			identifier: options.mailaddress,
+			password: options.password
+			};
+		var theRequest = {
+			method: "POST",
+			url: url,
+			body: utils.jsonStringify (bodystruct),
+			headers: {
+				"User-Agent": options.userAgent,
+				"Content-Type": "application/json"
+				}
+			};
+		request (theRequest, function (err, response, body) { 
+			var jstruct = undefined;
+			if (err) {
+				callback (err);
 				}
 			else {
 				try {
-					callback (undefined, JSON.parse (jsontext))
+					callback (undefined, JSON.parse (body));
 					}
 				catch (err) {
 					callback (err);
 					}
 				}
+			});
+		}
+	function blueskyNewPost (options, authorization, item, callback) {
+		const url = options.urlsite + "xrpc/com.atproto.repo.createRecord";
+		const nowstring = new Date ().toISOString ();
+		
+		function notEmpty (s) {
+			if (s === undefined) {
+				return (false);
+				}
+			if (s.length == 0) {
+				return (false);
+				}
+			return (true);
 			}
-		});
-	}
-function getUserInfo (callback) {
-	mastocall ("api/v1/accounts/verify_credentials", undefined, callback);
-	}
-function tootStatus (statusText, inReplyTo, callback) {
-	const params = {
-		status: statusText,
-		in_reply_to_id: inReplyTo
-		};
-	mastopost ("api/v1/statuses", params, callback);
-	}
-function postNewItem (item, feedUrl) {
-	var statustext = "";
-	function add (s) {
-		statustext += s + "\n";
+		function decodeForBluesky (s) {
+			var replacetable = {
+				"#39": "'"
+				};
+			s = utils.multipleReplaceAll (s, replacetable, true, "&", ";");
+			return (s);
+			}
+		function getStatusText (item) { //special for bluesky, just get the text, no link
+			var statustext = "";
+			function add (s) {
+				statustext += s;
+				}
+			function addText (desc) {
+				desc = decodeForBluesky (desc); 
+				desc = utils.trimWhitespace (utils.stripMarkup (desc));
+				if (desc.length > 0) {
+					const maxcount = config.bluesky.maxCtChars - (statustext.length + desc.length + 2); //the 2 is for the two newlines after the description
+					desc = utils.maxStringLength (desc, maxcount, false, true) + "\n\n";
+					add (desc);
+					}
+				}
+			if (notEmpty (item.title)) {
+				addText (item.title);
+				}
+			else {
+				addText (item.description);
+				}
+			return (statustext);
+			}
+		function getRecord (item) {
+			var theRecord = {
+				text: getStatusText (item),
+				createdAt: nowstring
+				}
+			if (notEmpty (item.link)) {
+				const linkword = utils.getDomainFromUrl (item.link);
+				theRecord.text += linkword;
+				theRecord.facets = [
+					{
+						features: [
+							{
+								uri: item.link,
+								"$type": "app.bsky.richtext.facet#link"
+								}
+							],
+						index: {
+							byteStart: theRecord.text.length - linkword.length,
+							byteEnd: theRecord.text.length
+							}
+						}
+					];
+				}
+			console.log ("bluesky/getRecord: theRecord == " + utils.jsonStringify (theRecord));
+			return (theRecord);
+			}
+		
+		const bodystruct = {
+			repo: authorization.did,
+			collection: "app.bsky.feed.post",
+			validate: true,
+			record: getRecord (item)
+			};
+		var theRequest = {
+			method: "POST",
+			url: url,
+			body: utils.jsonStringify (bodystruct),
+			headers: {
+				"User-Agent": options.userAgent,
+				"Content-Type": "application/json",
+				Authorization: "Bearer " + authorization.accessJwt
+				}
+			};
+		request (theRequest, function (err, response, body) { 
+			if (err) {
+				callback (err);
+				}
+			else {
+				try {
+					callback (undefined, JSON.parse (body));
+					}
+				catch (err) {
+					callback (err);
+					}
+				}
+			});
 		}
-	function addDescription (desc) {
-		const maxcount = config.maxCtChars - (statustext.length + link.length + 1); //the 1 is for the newline after the description
-		add (utils.maxStringLength (desc, maxcount, false, true));
-		add ("");
-		}
-	
-	add (config.disclaimer + "\n");
-	
-	var link = "";
-	if (item.link !== undefined) {
-		link = "\n" + item.link;
-		}
-	if (item.title !== undefined) {
-		add ("### " + item.title + "\n");
-		}
-	if (config.flServerSupportsMarkdown) {
-		if ((item.description !== undefined) || (item.markdown !== undefined)) {
-			var desc = (item.markdown === undefined) ? utils.stripMarkup (item.description) : item.markdown;
-			addDescription (desc);
+	function blueskyPostNewItem (item) {
+		if (utils.getBoolean (config.bluesky.enabled)) {
+			blueskyGetAccessToken (config.bluesky, function (err, authorization) {
+				if (err) {
+					console.log ("blueskyPostNewItem: err.message == " + err.message);
+					}
+				else {
+					blueskyNewPost (config.bluesky, authorization, item, function (err, data) {
+						if (err) {
+							console.log ("blueskyPostNewItem: err.message == " + err.message);
+							}
+						else {
+							}
+						});
+					}
+				});
 			}
 		}
-	else {
-		addDescription (item.description);
-		}
-	if (link.length > 0) {
-		add (link);
-		}
-	
-	tootStatus (statustext, undefined, function (err, data) {
-		if (err) {
-			console.log (err.message);
-			}
-		else {
-			console.log (new Date ().toLocaleTimeString () + ": " + data.url);
-			}
-		});
-	}
 function checkFeed (feedUrl, callback) {
 	const flNewFeed = isNewFeed (feedUrl);
 	var flPost = (flNewFeed && config.flOnlyPostNewItems) ? false : true;
@@ -263,7 +448,9 @@ function checkFeed (feedUrl, callback) {
 							};
 						statsChanged ();
 						if (flPost) {
-							postNewItem (item, feedUrl, flNewFeed);
+							mastoPostNewItem (item);
+							blueskyPostNewItem (item); //5/12/23 by DW
+							saveItemForDebugging (item);  //5/12/23 by DW
 							}
 						}
 					}
@@ -276,14 +463,16 @@ function writeStats () {
 		});
 	}
 function checkFeeds () {
-	whenLastCheck = new Date ();
-	config.feeds.forEach (function (feedUrl) {
-		checkFeed (feedUrl, function (err, data) {
-			if (err) {
-				console.log ("everySecond: feedUrl == " +feedUrl + ", err.message == " + err.message);
-				}
+	if (config.enabled) { //5/12/23 by DW
+		whenLastCheck = new Date ();
+		config.feeds.forEach (function (feedUrl) {
+			checkFeed (feedUrl, function (err, data) {
+				if (err) {
+					console.log ("everySecond: feedUrl == " +feedUrl + ", err.message == " + err.message);
+					}
+				});
 			});
-		});
+		}
 	}
 
 function startSocket () { //4/18/23 by DW
@@ -339,10 +528,8 @@ function startSocket () { //4/18/23 by DW
 	}
 
 function everyMinute () {
-	if (config.enabled) { //check feeds at most once a minute
-		if (utils.secondsSince (whenLastCheck) > config.ctSecsBetwChecks) {
-			checkFeeds ();
-			}
+	if (utils.secondsSince (whenLastCheck) > config.ctSecsBetwChecks) { //check feeds at most once a minute
+		checkFeeds ();
 		}
 	deleteOldGuids ();
 	}
@@ -370,12 +557,44 @@ function readConfig (fname, data, callback) {
 		callback ();
 		});
 	}
-readConfig (fnameStats, stats, function () {
-	readConfig (fnameConfig, config, function () {
-		console.log ("config == " + utils.jsonStringify (config));
-		checkFeeds (); //check at startup
-		utils.runEveryMinute (everyMinute);
-		setInterval (everySecond, 1000);
-		startSocket (); //4/18/23 by DW
+
+function testGetStatusText () {
+	const theNum = "8313";
+	getDebuggingItem (theNum, function (err, item) {
+		if (err) {
+			console.log (err.message);
+			}
+		else {
+			console.log ("testGetStatusText: item == " + utils.jsonStringify (item));
+			console.log ("testGetStatusText: statustext == " + getStatusText (item));
+			}
 		});
-	});
+	}
+function testBlueskyPost () {
+	const theNum = "8313";
+	getDebuggingItem (theNum, function (err, item) {
+		if (err) {
+			console.log (err.message);
+			}
+		else {
+			console.log ("testBlueskyPost: item == " + utils.jsonStringify (item));
+			blueskyPostNewItem (item); 
+			}
+		});
+	}
+
+
+function startup () {
+	console.log ("startup");
+	readConfig (fnameStats, stats, function () {
+		readConfig (fnameConfig, config, function () {
+			console.log ("config == " + utils.jsonStringify (config));
+			checkFeeds (); //check at startup
+			utils.runEveryMinute (everyMinute);
+			setInterval (everySecond, 1000);
+			startSocket (); //4/18/23 by DW
+			});
+		});
+	}
+startup ();
+

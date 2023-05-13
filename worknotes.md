@@ -1,3 +1,27 @@
+#### 5/13/23 by DW
+
+When we check for <i>enabled</i> in masto table, handle case where it doesn't exist. Avoid breakage with users of previous versions.
+
+Look for and use maxCtChars in masto or bluesky tables.
+
+Calling this version 0.6.0 because we added support for Bluesky.
+
+#### 5/12/23 by DW
+
+Add Bluesky support.
+
+added config.bluesky
+
+added config.masto.enabled, allows you to turn off one service
+
+there already was a config.enabled. we only do checkFeeds if it's true, so you can shut down an instance so it can be tested elsewhere
+
+Update readme.md to indicate new functionality
+
+Breakage in new version
+
+config.disclaimer no longer supported.
+
 #### 4/18/23 by DW
 
 Hook it up to FeedLand's websockets interface so we're notified instantly that feeds updated. Much simpler than the rssCloud interface. 
