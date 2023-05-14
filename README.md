@@ -6,7 +6,7 @@ A Node app that checks a list of feeds periodically, posting new items to Mastod
 
 Where ever you see "Mastodon" in the docs here, replace it in your mind with "Mastodon and/or Bluesky and/or WordPress."
 
-I've started a separate <a href="https://github.com/scripting/feedToMasto#using-with-bluesky">section</a> below for how to configure this app to post to Bluesky, and a section for WordPress.
+I've started a separate <a href="https://github.com/scripting/feedToMasto#using-with-bluesky">section</a> below for how to configure this app to post to Bluesky, and a <a href="https://github.com/scripting/feedToMasto#using-with-wordpress">section</a> for WordPress.
 
 ### Why did you do this?
 
