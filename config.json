@@ -23,6 +23,12 @@
 		"maxCtChars": 300,
 		"flServerSupportsMarkdown": false
 		},
+	"wordpress": {
+		"enabled": true,
+		"urlsite": "https://bullman.wordpress.com",
+		"username": "bullmancuso",
+		"password": "xxx"
+		},
 	"ctSecsBetwChecks": 60,
 	"maxCtChars": 500,
 	"flOnlyPostNewItems": true,
