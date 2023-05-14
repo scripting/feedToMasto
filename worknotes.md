@@ -1,3 +1,9 @@
+#### 5/14/23 by DW -- v0.6.3
+
+Reorg'd the code for bluesky and masto, to make them a single rountine that calls local routines.
+
+Then added support for WordPress.
+
 #### 5/13/23 by DW
 
 When we check for <i>enabled</i> in masto table, handle case where it doesn't exist. Avoid breakage with users of previous versions.
