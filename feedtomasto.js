@@ -141,9 +141,8 @@ function getDebuggingItem (num, callback) {
 			}
 		});
 	}
-function getStringBytes (theString) { //5/16/23 by DW -- return the number of bytes a string takes up in a JSON file
-	const jsontext = JSON.stringify (theString);
-	const ctbytes = jsontext.length - 2; //subtract for quotes
+function getStringBytes (theString) { //5/17/23 by DW
+	const ctbytes = Buffer.byteLength (theString);
 	return (ctbytes);
 	}
 
