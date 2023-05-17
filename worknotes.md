@@ -1,3 +1,7 @@
+#### 5/16/23 by DW
+
+Strings with emoji characters in them take up more space in a JSON file than those without. 
+
 #### 5/14/23 by DW -- v0.6.3
 
 Reorg'd the code for bluesky and masto, to make them a single rountine that calls local routines.

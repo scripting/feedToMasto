@@ -141,6 +141,11 @@ function getDebuggingItem (num, callback) {
 			}
 		});
 	}
+function getStringBytes (theString) { //5/16/23 by DW -- return the number of bytes a string takes up in a JSON file
+	const jsontext = JSON.stringify (theString);
+	const ctbytes = jsontext.length - 2; //subtract for quotes
+	return (ctbytes);
+	}
 
 //mastodon
 	function mastoPostNewItem (item) {
@@ -369,6 +374,7 @@ function getDebuggingItem (num, callback) {
 					if (notEmpty (item.link)) {
 						const linkword = utils.getDomainFromUrl (item.link);
 						theRecord.text += linkword;
+						const ctbytes = getStringBytes (theRecord.text); //5/16/23 by DW
 						theRecord.facets = [
 							{
 								features: [
@@ -378,8 +384,8 @@ function getDebuggingItem (num, callback) {
 										}
 									],
 								index: {
-									byteStart: theRecord.text.length - linkword.length,
-									byteEnd: theRecord.text.length
+									byteStart: ctbytes - linkword.length, //5/16/23 by DW
+									byteEnd: ctbytes
 									}
 								}
 							];
